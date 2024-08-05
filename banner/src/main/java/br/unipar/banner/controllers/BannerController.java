@@ -18,5 +18,4 @@ public class BannerController {
         return bannerService.insert(banner);
     }
 
-
 }
