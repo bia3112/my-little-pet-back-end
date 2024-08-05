@@ -1,11 +1,18 @@
 package br.unipar.banner.service;
 
 import br.unipar.banner.dto.BannerDTO;
+import br.unipar.banner.images.ImageStorageProperties;
 import br.unipar.banner.model.Banner;
 import br.unipar.banner.repositories.BannerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -16,8 +23,6 @@ import java.util.stream.IntStream;
 @Service
 public class BannerService {
 
-    @Autowired
-    private BannerRepository bannerRepository;
 
 //    [ ] dever ser possivel pegar 3 banner por sort;
 //    GET : /banners/sort BannerDTO[]
@@ -33,29 +38,31 @@ public class BannerService {
 //[ ] Deve ser possivel carregar a imagem
 //    GET: /banners/image?imageUrl=
 
-//    public  List<Banner> listSelectecBanners() {
-//        List<Banner> allBanners = bannerRepository.findAll();
-//        Random random = new Random();
-//
-//        return IntStream.range(0, 3)
-//                .mapToObj(i -> allBanners.get(random.nextInt(allBanners.size())))
-//                .map(this::convertToDTO)
-//                .collect(Collectors.toList());
-//    }
+
+    private final BannerRepository bannerRepository;
+    private final Path imageStorageLocation;
+
+    @Autowired
+    public BannerService(BannerRepository bannerRepository, ImageStorageProperties imageStorageProperties) {
+        this.bannerRepository = bannerRepository;
+        this.imageStorageLocation = Paths.get(imageStorageProperties.getUploadDir())
+                .toAbsolutePath().normalize();
+    }
 
     public Banner insert(Banner banner) {
-        banner.setId(UUID.randomUUID());
         banner.setCreatedAt(new Date());
-        banner.setIsActive(true);
         return bannerRepository.save(banner);
     }
 
-//    private BannerDTO convertToDTO(Banner banner) {
-//        return new BannerDTO(
-//                banner.getId(),
-//                banner.getImageUrl(),
-//                banner.getExternLink()
-//        );
-//    }
+    public String storeImage(MultipartFile file, String imageName) throws IOException {
+        Path targetLocation = this.imageStorageLocation.resolve(imageName);
+        Files.createDirectories(targetLocation.getParent()); // Ensure the directory exists
+        file.transferTo(targetLocation);
+
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/banner/images/download/")
+                .path(imageName)
+                .toUriString();
+    }
 
 }

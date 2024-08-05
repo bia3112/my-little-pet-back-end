@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    //@ExceptionHandler(ImageNotFoundException.class)
+    @ExceptionHandler(ImageNotFoundException.class)
     private ResponseEntity<String> imageNotfoundHandler(ImageNotFoundException exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found.");
     }
