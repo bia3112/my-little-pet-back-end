@@ -58,7 +58,11 @@ public class BannerService {
     public List<Banner> sortBanner() {
         Pageable pageable = PageRequest.of(0, 3);
         List<Banner> banners = bannerRepository.findAll(pageable).getContent();
-        return bannerRepository.findAll(pageable).getContent();
+        return banners;
+    }
+
+    public List<Banner> getBannersByLojaId(String lojaId) {
+        return bannerRepository.findByLojaId(lojaId);
     }
 
 }

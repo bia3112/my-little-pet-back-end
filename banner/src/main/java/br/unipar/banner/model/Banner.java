@@ -21,14 +21,14 @@ public class Banner {
     private Date createdAt;
     private Date deadLine;
     private int numberOfClicks;
-    private String storeId;
+    private String lojaId;
 
     public Banner() {
     }
 
     public Banner(int numberOfClicks, Date deadLine, Date createdAt,
                   int credit, String externLink, boolean isPaid,
-                  boolean isActive, String imageUrl, String title, UUID id, String storeId) {
+                  boolean isActive, String imageUrl, String title, UUID id, String lojaId) {
         this.numberOfClicks = numberOfClicks;
         this.deadLine = deadLine;
         this.createdAt = createdAt;
@@ -39,7 +39,7 @@ public class Banner {
         this.imageUrl = imageUrl;
         this.title = title;
         this.id = id;
-        this.storeId = storeId;
+        this.lojaId = lojaId;
     }
 
     public UUID getId() {
@@ -122,20 +122,12 @@ public class Banner {
         this.numberOfClicks = numberOfClicks;
     }
 
-    public String getStoreId() {
-        return storeId;
+    public String getLojaId() {
+        return lojaId;
     }
 
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
+    public void setLojaId(String lojaId) {
+        this.lojaId = lojaId;
     }
-
-    //    @PrePersist
-//    protected void onCreate() {
-//        this.createdAt = new Date();
-//        if (this.isActive == null) {
-//            this.isActive = true;
-//        }
-//    }
 
 }

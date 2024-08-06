@@ -1,5 +1,6 @@
 package br.unipar.banner.controllers;
 
+import br.unipar.banner.exceptions.BannerNotFoundException;
 import br.unipar.banner.images.ImageStorageProperties;
 import br.unipar.banner.model.Banner;
 import br.unipar.banner.service.BannerService;
@@ -39,12 +40,12 @@ public class BannerController {
     @PostMapping("/store/{storeId}")
     public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
                                          @RequestParam("file") MultipartFile file,
-                                         @PathVariable String storeId) {
+                                         @PathVariable String lojaId) {
         try {
             // Parse the banner data from JSON
             ObjectMapper objectMapper = new ObjectMapper();
             Banner banner = objectMapper.readValue(bannerData, Banner.class);
-            banner.setStoreId(storeId);
+            banner.setLojaId(lojaId);
 
             // Handle file upload and set imageUrl
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -75,11 +76,10 @@ public class BannerController {
         return ResponseEntity.ok(banners);
     }
 
-
-//    @GetMapping("/getAllByLojaId/{storeId}")
-//    public ResponseEntity<List<Banner>> getByLojaId(@PathVariable String storeId) {
-//
-//    }
+    @GetMapping("/loja/{lojaId}")
+    public List<Banner> getBannersByLojaId(@PathVariable String lojaId) {
+        return bannerService.getBannersByLojaId(lojaId);
+    }
 
 
 }
