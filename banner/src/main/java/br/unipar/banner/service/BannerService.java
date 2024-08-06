@@ -1,11 +1,12 @@
 package br.unipar.banner.service;
 
-import br.unipar.banner.dto.BannerDTO;
 import br.unipar.banner.exceptions.ImageNotFoundException;
 import br.unipar.banner.images.ImageStorageProperties;
 import br.unipar.banner.model.Banner;
 import br.unipar.banner.repositories.BannerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BannerService {
@@ -53,5 +55,10 @@ public class BannerService {
         return bannerRepository.save(banner);
     }
 
+    public List<Banner> sortBanner() {
+        Pageable pageable = PageRequest.of(0, 3);
+        List<Banner> banners = bannerRepository.findAll(pageable).getContent();
+        return bannerRepository.findAll(pageable).getContent();
+    }
 
 }

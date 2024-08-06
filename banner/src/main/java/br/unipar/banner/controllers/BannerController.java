@@ -16,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 @RestController
@@ -66,6 +67,12 @@ public class BannerController {
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/sort")
+    public ResponseEntity<List<Banner>> sortBanner() {
+        List<Banner> banners = bannerService.sortBanner();
+        return ResponseEntity.ok(banners);
     }
 
 
