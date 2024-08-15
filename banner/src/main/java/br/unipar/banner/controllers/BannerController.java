@@ -37,11 +37,13 @@ public class BannerController {
                 .toAbsolutePath().normalize();
     }
 
-    @PostMapping("/store/{storeId}")
+    @PostMapping("/store/{lojaId}")
     public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
                                          @RequestParam("file") MultipartFile file,
                                          @PathVariable String lojaId) {
         try {
+            System.out.println("Recebendo requisição para inserir banner.");
+
             // Parse the banner data from JSON
             ObjectMapper objectMapper = new ObjectMapper();
             Banner banner = objectMapper.readValue(bannerData, Banner.class);
@@ -63,10 +65,15 @@ public class BannerController {
             banner.setImageUrl(fileDownloadUri);
 
             Banner savedBanner = bannerService.insert(banner, file);
+            System.out.println("URL de download da imagem: " + fileDownloadUri);
+            System.out.println("Banner salvo com sucesso no banco de dados.");
 
             return ResponseEntity.ok(savedBanner);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
+        } catch(Exception  e) {
+            e.printStackTrace(); // Log de qualquer outra exceção não prevista
+            return ResponseEntity.status(500).build(); // Retornar erro de servidor
         }
     }
 

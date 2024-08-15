@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,7 +34,10 @@ public class BannerService {
                 .toAbsolutePath().normalize();
     }
 
+    @Transactional
     public Banner insert(Banner banner, MultipartFile file) throws IOException {
+        System.out.println("Inserindo banner no banco de dados.");
+
         // Handle file upload and set imageUrl
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         Path targetLocation = imageStorageLocation.resolve(fileName);
@@ -52,6 +56,7 @@ public class BannerService {
 
         banner.setCreatedAt(new Date());
 
+        System.out.println("Banner salvo: " + banner);
         return bannerRepository.save(banner);
     }
 
@@ -64,5 +69,7 @@ public class BannerService {
     public List<Banner> getBannersByLojaId(String lojaId) {
         return bannerRepository.findByLojaId(lojaId);
     }
+
+    
 
 }
