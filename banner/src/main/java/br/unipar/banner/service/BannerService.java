@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BannerService {
@@ -70,6 +71,12 @@ public class BannerService {
         return bannerRepository.findByLojaId(lojaId);
     }
 
-    
+    public Banner findById(UUID bannerId) {
+        return bannerRepository.findById(bannerId).orElse(null);
+    }
+
+    public Banner update(Banner banner) {
+        return bannerRepository.save(banner);
+    }
 
 }
