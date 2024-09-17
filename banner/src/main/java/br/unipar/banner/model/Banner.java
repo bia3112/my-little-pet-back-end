@@ -1,6 +1,7 @@
 package br.unipar.banner.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
 import java.util.UUID;
@@ -14,13 +15,24 @@ public class Banner {
     private UUID id;
     private String title;
     private String imageUrl;
-    private boolean isActive = true;
-    private boolean isPaid;
+
+    @Column(nullable = false)
+    private boolean isActive = false;
+
+    @Column(nullable = false)
+    private boolean isPaid = false;
+
     private String externLink;
     private int credit;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date deadLine;
     private int numberOfClicks;
+
+    @NotNull(message = "lojaId não pode ser nulo")
     private String lojaId;
 
     public Banner() {

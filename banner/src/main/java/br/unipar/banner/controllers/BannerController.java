@@ -1,5 +1,6 @@
 package br.unipar.banner.controllers;
 
+import br.unipar.banner.dto.BannerDTO;
 import br.unipar.banner.exceptions.BannerNotFoundException;
 import br.unipar.banner.images.ImageStorageProperties;
 import br.unipar.banner.model.Banner;
@@ -29,85 +30,11 @@ public class BannerController {
     @Autowired
     private BannerService bannerService;
 
-    //lugar para armazenar o caminho do arquivo
-    private final Path imageStorageLocation;
-
-    //inicializando o local de armazenamento
-    public BannerController(ImageStorageProperties imageStorageProperties) {
-        //local é relativo, então precisa transformar em absoluto
-        this.imageStorageLocation = Paths.get(imageStorageProperties.getUploadDir())
-                .toAbsolutePath().normalize();
+    @PostMapping
+    public ResponseEntity<Banner> createBanner(@RequestBody BannerDTO bannerDTO) {
+        Banner banner = bannerService.createBanner(bannerDTO);
+        return new ResponseEntity<>(banner, HttpStatus.CREATED);
     }
-
-    @PostMapping("/store/{lojaId}")
-    public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
-                                         @RequestParam("imageUrl") String imageUrl,
-                                         @PathVariable String lojaId) {
-        try {
-            System.out.println("Recebendo requisição para inserir banner.");
-
-            // Parse o objeto banner do JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            Banner banner = objectMapper.readValue(bannerData, Banner.class);
-            banner.setLojaId(lojaId);
-
-            // Defina a URL da imagem no banner
-            banner.setImageUrl(imageUrl);
-
-            // Salve o banner no banco de dados
-            Banner savedBanner = bannerService.insert(banner, imageUrl);
-            System.out.println("URL da imagem: " + imageUrl);
-            System.out.println("Banner salvo com sucesso no banco de dados.");
-
-            return ResponseEntity.ok(savedBanner);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            e.printStackTrace(); // Log de qualquer outra exceção não prevista
-            return ResponseEntity.status(500).build(); // Retornar erro de servidor
-        }
-    }
-
-
-//    @PostMapping("/store/{lojaId}")
-//    public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
-//                                         @RequestParam("file") MultipartFile file,
-//                                         @PathVariable String lojaId) {
-//        try {
-//            System.out.println("Recebendo requisição para inserir banner.");
-//
-//            // Parse the banner data from JSON
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            Banner banner = objectMapper.readValue(bannerData, Banner.class);
-//            banner.setLojaId(lojaId);
-//
-//            // Handle file upload and set imageUrl
-//            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-//            Path targetLocation = imageStorageLocation.resolve(fileName);
-//            try {
-//                file.transferTo(targetLocation);
-//            } catch (IOException e) {
-//                throw new ImageNotFoundException("Erro ao baixar o arquivo: " + file.getOriginalFilename(), e);
-//            }
-//
-//            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-//                    .path("/banners/download/")
-//                    .path(fileName)
-//                    .toUriString();
-//            banner.setImageUrl(fileDownloadUri);
-//
-//            Banner savedBanner = bannerService.insert(banner, file);
-//            System.out.println("URL de download da imagem: " + fileDownloadUri);
-//            System.out.println("Banner salvo com sucesso no banco de dados.");
-//
-//            return ResponseEntity.ok(savedBanner);
-//        } catch (IOException e) {
-//            return ResponseEntity.badRequest().build();
-//        } catch(Exception  e) {
-//            e.printStackTrace(); // Log de qualquer outra exceção não prevista
-//            return ResponseEntity.status(500).build(); // Retornar erro de servidor
-//        }
-//    }
 
     @GetMapping("/sort")
     public ResponseEntity<List<Banner>> sortBanner() {
