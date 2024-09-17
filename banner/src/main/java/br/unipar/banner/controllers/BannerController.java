@@ -41,43 +41,73 @@ public class BannerController {
 
     @PostMapping("/store/{lojaId}")
     public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
-                                         @RequestParam("file") MultipartFile file,
+                                         @RequestParam("imageUrl") String imageUrl,
                                          @PathVariable String lojaId) {
         try {
             System.out.println("Recebendo requisição para inserir banner.");
 
-            // Parse the banner data from JSON
+            // Parse o objeto banner do JSON
             ObjectMapper objectMapper = new ObjectMapper();
             Banner banner = objectMapper.readValue(bannerData, Banner.class);
             banner.setLojaId(lojaId);
 
-            // Handle file upload and set imageUrl
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-            Path targetLocation = imageStorageLocation.resolve(fileName);
-            try {
-                file.transferTo(targetLocation);
-            } catch (IOException e) {
-                throw new ImageNotFoundException("Erro ao baixar o arquivo: " + file.getOriginalFilename(), e);
-            }
+            // Defina a URL da imagem no banner
+            banner.setImageUrl(imageUrl);
 
-            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/banners/download/")
-                    .path(fileName)
-                    .toUriString();
-            banner.setImageUrl(fileDownloadUri);
-
-            Banner savedBanner = bannerService.insert(banner, file);
-            System.out.println("URL de download da imagem: " + fileDownloadUri);
+            // Salve o banner no banco de dados
+            Banner savedBanner = bannerService.insert(banner, imageUrl);
+            System.out.println("URL da imagem: " + imageUrl);
             System.out.println("Banner salvo com sucesso no banco de dados.");
 
             return ResponseEntity.ok(savedBanner);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
-        } catch(Exception  e) {
+        } catch (Exception e) {
             e.printStackTrace(); // Log de qualquer outra exceção não prevista
             return ResponseEntity.status(500).build(); // Retornar erro de servidor
         }
     }
+
+
+//    @PostMapping("/store/{lojaId}")
+//    public ResponseEntity<Banner> insert(@RequestParam("banner") String bannerData,
+//                                         @RequestParam("file") MultipartFile file,
+//                                         @PathVariable String lojaId) {
+//        try {
+//            System.out.println("Recebendo requisição para inserir banner.");
+//
+//            // Parse the banner data from JSON
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            Banner banner = objectMapper.readValue(bannerData, Banner.class);
+//            banner.setLojaId(lojaId);
+//
+//            // Handle file upload and set imageUrl
+//            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//            Path targetLocation = imageStorageLocation.resolve(fileName);
+//            try {
+//                file.transferTo(targetLocation);
+//            } catch (IOException e) {
+//                throw new ImageNotFoundException("Erro ao baixar o arquivo: " + file.getOriginalFilename(), e);
+//            }
+//
+//            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                    .path("/banners/download/")
+//                    .path(fileName)
+//                    .toUriString();
+//            banner.setImageUrl(fileDownloadUri);
+//
+//            Banner savedBanner = bannerService.insert(banner, file);
+//            System.out.println("URL de download da imagem: " + fileDownloadUri);
+//            System.out.println("Banner salvo com sucesso no banco de dados.");
+//
+//            return ResponseEntity.ok(savedBanner);
+//        } catch (IOException e) {
+//            return ResponseEntity.badRequest().build();
+//        } catch(Exception  e) {
+//            e.printStackTrace(); // Log de qualquer outra exceção não prevista
+//            return ResponseEntity.status(500).build(); // Retornar erro de servidor
+//        }
+//    }
 
     @GetMapping("/sort")
     public ResponseEntity<List<Banner>> sortBanner() {
@@ -109,5 +139,9 @@ public class BannerController {
         }
     }
 
+    @GetMapping("/getHelloWorld")
+    public ResponseEntity<String> getHelloWorld() {
+        return ResponseEntity.ok("Hello, World!");
+    }
 
 }

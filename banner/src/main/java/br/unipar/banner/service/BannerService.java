@@ -36,30 +36,44 @@ public class BannerService {
     }
 
     @Transactional
-    public Banner insert(Banner banner, MultipartFile file) throws IOException {
+    public Banner insert(Banner banner, String imageUrl) {
         System.out.println("Inserindo banner no banco de dados.");
 
-        // Handle file upload and set imageUrl
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        Path targetLocation = imageStorageLocation.resolve(fileName);
-
-        try {
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new ImageNotFoundException("Error uploading image: " + fileName, e);
-        }
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/banners/download/")
-                .path(fileName)
-                .toUriString();
-        banner.setImageUrl(fileDownloadUri);
+        // Defina a URL da imagem no banner
+        banner.setImageUrl(imageUrl);
 
         banner.setCreatedAt(new Date());
 
         System.out.println("Banner salvo: " + banner);
         return bannerRepository.save(banner);
     }
+
+
+//    @Transactional
+//    public Banner insert(Banner banner, MultipartFile file) throws IOException {
+//        System.out.println("Inserindo banner no banco de dados.");
+//
+//        // Handle file upload and set imageUrl
+//        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//        Path targetLocation = imageStorageLocation.resolve(fileName);
+//
+//        try {
+//            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            throw new ImageNotFoundException("Error uploading image: " + fileName, e);
+//        }
+//
+//        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                .path("/banners/download/")
+//                .path(fileName)
+//                .toUriString();
+//        banner.setImageUrl(fileDownloadUri);
+//
+//        banner.setCreatedAt(new Date());
+//
+//        System.out.println("Banner salvo: " + banner);
+//        return bannerRepository.save(banner);
+//    }
 
     public List<Banner> sortBanner() {
         Pageable pageable = PageRequest.of(0, 3);
